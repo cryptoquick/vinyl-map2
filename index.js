@@ -64,7 +64,7 @@ function map(fn) {
 
     if (fn.length === 3) {
       // contents, filename, done (async)
-      fn(contents, file.path, function (err, mapped) {
+      fn(contents, file, function (err, mapped) {
         if (err) {
           stream.emit('error', err);
         } else {
@@ -74,7 +74,7 @@ function map(fn) {
     } else {
       // contents and/or filename (sync)
       try {
-        mapped = fn(contents, file.path);
+        mapped = fn(contents, file);
       } catch (err) {
         return stream.emit('error', err);
       }
