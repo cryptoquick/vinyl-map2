@@ -45,12 +45,20 @@ function map(fn) {
       mapped = contents;
     }
 
-    if (file.isBuffer()) {
-      file.contents = new Buffer(mapped);
+    if (mapped.readable === true) {
+      mapped.on('finish', function () {
+        next()
+      })
+      return
     }
+    else {
+      if (file.isBuffer()) {
+        file.contents = new Buffer(mapped);
+      }
 
-    if (file.isStream()) {
-      file.contents = newFrom([mapped]);
+      if (file.isStream()) {
+        file.contents = newFrom([mapped]);
+      }
     }
 
     push(file, next);
@@ -59,7 +67,6 @@ function map(fn) {
   function mapFile(file, next, contents) {
     var mapped;
 
-    file = file.clone();
     contents = arguments.length < 3 ? file.contents : contents;
 
     if (fn.length === 3) {
